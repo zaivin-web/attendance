@@ -1,0 +1,159 @@
+{% block extra_js %}
+<script src="{% static 'js/html5-qrcode.min.js' %}"></script>
+<script>
+let html5QrcodeScanner = null;
+let currentAction = 'time_in';
+
+document.addEventListener('DOMContentLoaded', function() {
+    const timeInBtn = document.getElementById('time-in-btn');
+    const timeOutBtn = document.getElementById('time-out-btn');
+    const switchCameraBtn = document.getElementById('switch-camera');
+    const toggleFlashBtn = document.getElementById('toggle-flash');
+    let currentCamera = 'environment';
+    let flashOn = false;
+
+    function onScanSuccess(decodedText, decodedResult) {
+        try {
+            const qrData = JSON.parse(decodedText);
+            html5QrcodeScanner.pause();
+            processAttendance(qrData);
+        } catch (e) {
+            showResult({
+                success: false,
+                message: 'Invalid QR Code format'
+            });
+        }
+    }
+
+    function onScanError(errorMessage) {
+        // Ignore scan errors as they are common when no QR code is present
+        console.debug(errorMessage);
+    }
+
+    async function startScanner() {
+        try {
+            if (html5QrcodeScanner) {
+                await html5QrcodeScanner.stop();
+            }
+
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            await html5QrcodeScanner.start(
+                { facingMode: currentCamera },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.0
+                },
+                onScanSuccess,
+                onScanError
+            );
+        } catch (err) {
+            console.error("Error starting scanner:", err);
+            showResult({
+                success: false,
+                message: 'Error accessing camera. Please make sure camera permissions are granted.'
+            });
+        }
+    }
+
+    startScanner();
+
+    timeInBtn.addEventListener('click', function() {
+        currentAction = 'time_in';
+        timeInBtn.classList.add('btn-primary');
+        timeInBtn.classList.remove('btn-secondary');
+        timeOutBtn.classList.add('btn-secondary');
+        timeOutBtn.classList.remove('btn-primary');
+    });
+
+    timeOutBtn.addEventListener('click', function() {
+        currentAction = 'time_out';
+        timeOutBtn.classList.add('btn-primary');
+        timeOutBtn.classList.remove('btn-secondary');
+        timeInBtn.classList.add('btn-secondary');
+        timeInBtn.classList.remove('btn-primary');
+    });
+
+    switchCameraBtn.addEventListener('click', async function() {
+        currentCamera = currentCamera === 'environment' ? 'user' : 'environment';
+        await startScanner();
+    });
+
+    toggleFlashBtn.addEventListener('click', async function() {
+        try {
+            if (html5QrcodeScanner) {
+                flashOn = !flashOn;
+                await html5QrcodeScanner.toggleFlash();
+                toggleFlashBtn.innerHTML = flashOn ? 
+                    '<i class="fas fa-bolt text-warning"></i>' : 
+                    '<i class="fas fa-bolt"></i>';
+            }
+        } catch (err) {
+            console.error("Error toggling flash:", err);
+        }
+    });
+
+    function processAttendance(qrData) {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch('/scan-qr/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                ...qrData,
+                action: currentAction
+            })
+        })
+        .then(response => response.json())
+        .then(result => {
+            showResult(result);
+            setTimeout(() => html5QrcodeScanner.resume(), 3000);
+        })
+        .catch(error => {
+            showResult({
+                success: false,
+                message: 'Error processing attendance: ' + error.message
+            });
+            setTimeout(() => html5QrcodeScanner.resume(), 3000);
+        });
+    }
+
+    function showResult(result) {
+        const resultSection = document.getElementById('result-section');
+        const scanStatus = document.getElementById('scan-status');
+        const scanMessage = document.getElementById('scan-message');
+        const studentName = document.getElementById('student-name');
+        const studentLRN = document.getElementById('student-lrn');
+        const studentSection = document.getElementById('student-section');
+        const scanTime = document.getElementById('scan-time');
+
+        resultSection.style.display = 'block';
+        scanStatus.textContent = result.success ? 'Scan Successful' : 'Scan Failed';
+        scanMessage.className = `alert ${result.success ? 'alert-success' : 'alert-danger'}`;
+        scanMessage.textContent = result.message;
+
+        if (result.student) {
+            studentName.textContent = result.student.name || 'N/A';
+            studentLRN.textContent = result.student.lrn || 'N/A';
+            studentSection.textContent = result.student.section || 'N/A';
+            scanTime.textContent = new Date().toLocaleTimeString();
+        }
+
+        // Play sound based on result
+        const audio = new Audio();
+        audio.src = result.success ? 
+            "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAASAAAeMwAUFBQUFCIiIiIiIjAwMDAwPz8/Pz8/TU1NTU1qamtra2t4eHh4eHiGhoaGhoaUnJycnJysrKysrKy5ubm5ubm5xsbGxsbG1NTU1NTU4+Pj4+Pj8fHx8fHx////////////AAAAOUxBTUUzLjEwMACQCgAAAAAAAAAAVCgECTMtAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQZN4P8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" : 
+            "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAdAAAyQAAEBAQECQkJCQ4ODg4TExMTGBgYGB0dHR0iIiIiJycnJywsLCwxMTExNjY2Njs7Ozs/Pz8/RERERElJSUlOTk5OU1NTU1hYWFhdXV1dYmJiYmdnZ2dsbGxscXFxcXZ2dnaAgICAgYGBgYSEhISEhoaGiIiIiIqKioqNjY2NkZGRkZWVlZWYmJiYmpqamo6Ojo6QkJCQlJSUlJmZmZmfn5+fpqamprGxsbG8vLy8x8fHx9LS0tLd3d3d6Ojo6PPz8/P////////////AAAAOUxBTUUzLjEwMACQCgAAAAAAAAAAVCgECTctAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//sQZAAP8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//sQZN4P8AAAaQAAAAgAAA0gAAABAAABpAAAACAAADSAAAAEVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
+        audio.play();
+
+        // Auto-hide result after 3 seconds
+        setTimeout(() => {
+            resultSection.style.display = 'none';
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}

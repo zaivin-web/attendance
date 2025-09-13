@@ -1,0 +1,39 @@
+# Install basic packages
+pkg update
+pkg upgrade
+pkg install python
+
+# Install development tools
+pkg install git
+pkg install termux-api
+
+# Install Python packages
+pip install django
+pip install qrcode
+pip install pillow
+
+# Clone your project (replace with your repository URL if using git)
+cd storage/shared
+git clone [your-repository-url] attendance
+cd attendance
+
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate
+
+# Install project requirements
+pip install -r requirements.txt
+
+# Request storage permission
+termux-setup-storage
+
+# Run migrations
+python manage.py migrate
+
+# Start the server
+python manage.py runserver 0.0.0.0:8000
+
+# Your server will be accessible at:
+# http://[your-phone-ip]:8000
+# or
+# http://localhost:8000

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ school_name }} - Student QR Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a73e8 0%, #165cbd 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .header p {
+            margin: 10px 0 0;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .qr-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .qr-code {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .qr-code img {
+            max-width: 200px;
+            height: auto;
+            display: block;
+        }
+        .student-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .student-info h3 {
+            margin-top: 0;
+            color: #1a73e8;
+        }
+        .student-info p {
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .student-info p:last-child {
+            border-bottom: none;
+        }
+        .instructions {
+            background: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .instructions h3 {
+            color: #1a73e8;
+            margin-top: 0;
+        }
+        .instructions ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Southville 8b National High School</h1>
+            <p>Student Attendance QR Code</p>
+        </div>
+        
+        <div class="content">
+            <p>Dear {{ student.get_full_name }},</p>
+            
+            <p>Thank you for registering with our attendance system. Your account has been successfully created, and below you'll find your personal QR code for attendance tracking.</p>
+            
+            <div class="qr-container">
+                <div class="qr-code">
+                    <img src="cid:qr_code" alt="Student QR Code">
+                </div>
+                <p style="margin-top: 10px; color: #666;">Scan this QR code for attendance</p>
+            </div>
+            
+            <div class="student-info">
+                <h3>Student Information</h3>
+                <p><strong>Student ID:</strong> {{ student.student_id }}</p>
+                <p><strong>Full Name:</strong> {{ student.get_full_name }}</p>
+                <p><strong>LRN:</strong> {{ student.lrn }}</p>
+                <p><strong>Section:</strong> {{ student.section }}</p>
+            </div>
+            
+            <div class="instructions">
+                <h3>How to Save Your QR Code from Gmail</h3>
+                <ul>
+                    <li style="margin-bottom: 15px;">On Mobile (Android/iOS):
+                        <ol style="margin-top: 5px; color: #444;">
+                            <li>Press and hold the QR code image</li>
+                            <li>Select "Download image" or "Save image"</li>
+                            <li>The QR code will be saved to your phone's gallery</li>
+                        </ol>
+                    </li>
+                    <li style="margin-bottom: 15px;">On Computer:
+                        <ol style="margin-top: 5px; color: #444;">
+                            <li>Right-click on the QR code image</li>
+                            <li>Select "Save image as..."</li>
+                            <li>Choose a location on your computer and click Save</li>
+                        </ol>
+                    </li>
+                    <li style="margin-bottom: 15px;">Alternative Method:
+                        <ol style="margin-top: 5px; color: #444;">
+                            <li>Find the QR code attachment at the bottom of this email</li>
+                            <li>Click on the download icon next to the attachment</li>
+                            <li>The image will be saved to your downloads folder</li>
+                        </ol>
+                    </li>
+                </ul>
+
+                <h3 style="margin-top: 20px;">How to Use Your QR Code</h3>
+                <ul>
+                    <li>Keep the saved QR code on your mobile device for easy access</li>
+                    <li>You can also print this email and keep the QR code with you</li>
+                    <li>Make sure to have your QR code ready before entering or leaving school</li>
+                    <li>When scanning, make sure your QR code is clearly visible and well-lit</li>
+                </ul>
+            </div>
+            
+            <div class="warning">
+                <p><strong>⚠️ Important Notice:</strong></p>
+                <ul>
+                    <li>This QR code is unique to you and should not be shared with anyone</li>
+                    <li>Using another student's QR code is strictly prohibited</li>
+                    <li>Report immediately if you lose access to your QR code</li>
+                </ul>
+            </div>
+
+            <p>If you have any questions or need assistance, please don't hesitate to contact the school administration office.</p>
+        </div>
+        
+        <div class="footer">
+            <p>This is an automated message. Please do not reply.</p>
+            <p>© {{ school_name }} - Student Attendance System {{ current_year }}</p>
+        </div>
+    </div>
+</body>
+</html>

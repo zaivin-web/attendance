@@ -1,0 +1,109 @@
+/* Attendance status colors */
+.field-status .present {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.field-status .late {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.field-status .absent {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.field-status .excused {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+/* Time display formatting */
+.field-time_display {
+    white-space: nowrap;
+}
+
+/* QR code preview */
+.field-qr_code_preview img {
+    border: 1px solid #ddd;
+    padding: 3px;
+    border-radius: 4px;
+}
+
+/* Parent contact info */
+.field-parent_contact {
+    white-space: nowrap;
+}
+
+/* List filters */
+#changelist-filter h3 {
+    background: #2c3e50;
+    color: white;
+}
+
+#changelist-filter li.selected {
+    background: #3498db;
+    border-radius: 3px;
+}
+
+#changelist-filter li.selected a {
+    color: white;
+}
+
+/* Header customization */
+#header {
+    background: #2c3e50;
+    color: white;
+}
+
+#header a:link, #header a:visited {
+    color: white;
+}
+
+/* Make the admin more responsive */
+@media (max-width: 767px) {
+    .column-time_display,
+    .column-parent_contact {
+        display: none;
+    }
+}
+
+/* Improve form layout */
+.form-row {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.form-row:last-child {
+    border-bottom: none;
+}
+
+.form-row input[type=text],
+.form-row input[type=email],
+.form-row input[type=number],
+.form-row select,
+.form-row textarea {
+    width: 100%;
+    max-width: 500px;
+    padding: 6px 8px;
+}
+
+/* Fieldset improvements */
+.module h2, .module caption {
+    background: #2c3e50;
+    color: white;
+}
+
+/* Add some spacing between inline items */
+.inline-group .tabular tr.has_original td {
+    padding: 8px;
+}

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header bg-light py-4 mb-4 border-bottom">
+    <div class="container">
+        <h2 class="text-center mb-0">
+            <i class="fas fa-user-plus me-2"></i>
+            Student Registration
+        </h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    {% if messages %}
+                    <div class="messages mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-user me-2"></i>
+                                    Personal Information
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="first_name" class="form-label">First Name</label>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" required
+                                            pattern="[A-Za-z ]+"
+                                            title="Please enter a valid name (letters and spaces only)">
+                                        <div class="invalid-feedback">
+                                            Please enter a valid first name.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="last_name" class="form-label">Last Name</label>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" required
+                                            pattern="[A-Za-z ]+"
+                                            title="Please enter a valid name (letters and spaces only)">
+                                        <div class="invalid-feedback">
+                                            Please enter a valid last name.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-id-card me-2"></i>
+                                    Student Information
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="lrn" class="form-label">LRN (Learner Reference Number)</label>
+                                        <input type="text" class="form-control" id="lrn" name="lrn" required 
+                                            maxlength="12" pattern="[0-9]{12}"
+                                            title="Please enter a valid 12-digit LRN">
+                                        <div class="invalid-feedback">
+                                            Please enter a valid 12-digit LRN number.
+                                        </div>
+                                    </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <div class="form-text">Your QR code will be sent to this email address.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="birth_date" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="section" class="form-label">Section</label>
+                            <input type="text" class="form-control" id="section" name="section" required placeholder="Enter your section (e.g. 7-A, 8-Einstein)">
+                        </div>
+                        <hr>
+                        <h5>Parent/Guardian Information</h5>
+                        <div class="mb-3">
+                            <label for="parent_name" class="form-label">Parent/Guardian Name</label>
+                            <input type="text" class="form-control" id="parent_name" name="parent_name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="parent_email" class="form-label">Parent/Guardian Email</label>
+                            <input type="email" class="form-control" id="parent_email" name="parent_email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="parent_mobile" class="form-label">Parent/Guardian Mobile Number</label>
+                            <input type="text" class="form-control" id="parent_mobile" name="parent_mobile" maxlength="11">
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Register</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
