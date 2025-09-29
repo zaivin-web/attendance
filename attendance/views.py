@@ -25,8 +25,7 @@ def generate_qr(request):
     return render(request, 'qrgenerator.html')
 
 def registration_success(request):
-    return render(request, 'registration_success.html')
-
+    return redirect('registration_success')
 def scan_qr(request):
     if request.method == 'POST':
         try:

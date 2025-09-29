@@ -1,4 +1,93 @@
 {% extends 'base.html' %}
+{% block content %}
+{% extends 'base.html' %}
+{% block content %}
+<script>
+    let seconds = 4;
+    function updateProgressBar() {
+        document.getElementById('redirect-progress').style.width = (100 - (seconds * 25)) + '%';
+        document.getElementById('redirect-seconds').textContent = seconds;
+    }
+    function countdownRedirect() {
+        updateProgressBar();
+        if (seconds > 0) {
+            seconds--;
+            setTimeout(countdownRedirect, 1000);
+        } else {
+            window.location.replace("{% url 'index' %}");
+        }
+    }
+    window.onload = countdownRedirect;
+</script>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <img src="{% static 'images/email-sent.svg' %}" alt="Email Sent" class="img-fluid mb-4" style="max-width: 180px;">
+                        <h2 class="text-success mb-3"><i class="fas fa-check-circle me-2"></i>Registration Successful!</h2>
+                        <p class="lead">Your QR code has been sent to your email address.</p>
+                        <div class="alert alert-info mt-3">
+                            Redirecting to homepage in <span id="redirect-seconds">4</span> seconds...
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div id="redirect-progress" class="progress-bar bg-success" role="progressbar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="steps-container">
+                        <div class="step mb-4">
+                            <div class="d-flex">
+                                <div class="step-icon bg-primary text-white rounded-circle p-3 me-3">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h5">1. Check Your Email</h4>
+                                    <p class="text-muted">We've sent your QR code to the email address you provided. Please check your inbox (and spam folder if needed).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step mb-4">
+                            <div class="d-flex">
+                                <div class="step-icon bg-primary text-white rounded-circle p-3 me-3">
+                                    <i class="fas fa-save"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h5">2. Save Your QR Code</h4>
+                                    <p class="text-muted">Download and save the QR code image. You can keep it on your phone or print it out.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="step mb-4">
+                            <div class="d-flex">
+                                <div class="step-icon bg-primary text-white rounded-circle p-3 me-3">
+                                    <i class="fas fa-qrcode"></i>
+                                </div>
+                                <div>
+                                    <h4 class="h5">3. Start Using Your QR Code</h4>
+                                    <p class="text-muted">Use your QR code to record your attendance when entering and leaving school.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="{% url 'index' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-home me-2"></i>
+                            Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+    </div>
+</div>
+{% endblock %}
+    </div>
+</div>
+{% extends 'base.html' %}
             <div class="card shadow-sm">
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
