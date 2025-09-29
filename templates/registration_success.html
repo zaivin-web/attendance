@@ -107,13 +107,14 @@
             {% endif %}
                     
                     <p class="card-text mt-4">
-                        Thank you for registering. A QR code has been sent to your email address.
-                        Please check your inbox and save the QR code - you'll need it for attendance tracking.
+                        Registration successful! QR code has been sent to your email.<br>
+                        You will be redirected to the QR Code Attendance System homepage shortly.
                     </p>
-                    
-                    <div class="mt-4">
-                        <a href="{% url 'index' %}" class="btn btn-primary">Return to Home</a>
-                    </div>
+                    <script>
+                        setTimeout(function() {
+                            window.location.replace("{% url 'index' %}");
+                        }, 3000); // 3 seconds
+                    </script>
                 </div>
             </div>
         </div>

@@ -39,21 +39,13 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="first_name" class="form-label">First Name</label>
-                                        <input type="text" class="form-control" id="first_name" name="first_name" required
-                                            pattern="[A-Za-z ]+"
-                                            title="Please enter a valid name (letters and spaces only)">
-                                        <div class="invalid-feedback">
-                                            Please enter a valid first name.
-                                        </div>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" required pattern="[A-Za-z ]+" title="Please enter a valid name (letters and spaces only)" placeholder="Juan" autocomplete="given-name">
+                                        <div class="invalid-feedback">Please enter a valid first name (letters only).</div>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="last_name" class="form-label">Last Name</label>
-                                        <input type="text" class="form-control" id="last_name" name="last_name" required
-                                            pattern="[A-Za-z ]+"
-                                            title="Please enter a valid name (letters and spaces only)">
-                                        <div class="invalid-feedback">
-                                            Please enter a valid last name.
-                                        </div>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" required pattern="[A-Za-z ]+" title="Please enter a valid name (letters and spaces only)" placeholder="Dela Cruz" autocomplete="family-name">
+                                        <div class="invalid-feedback">Please enter a valid last name (letters only).</div>
                                     </div>
                                 </div>
                             </div>
@@ -69,42 +61,53 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <label for="lrn" class="form-label">LRN (Learner Reference Number)</label>
-                                        <input type="text" class="form-control" id="lrn" name="lrn" required 
-                                            maxlength="12" pattern="[0-9]{12}"
-                                            title="Please enter a valid 12-digit LRN">
-                                        <div class="invalid-feedback">
-                                            Please enter a valid 12-digit LRN number.
-                                        </div>
+                                        <input type="text" class="form-control" id="lrn" name="lrn" required maxlength="12" pattern="[0-9]{12}" title="Please enter a valid 12-digit LRN" placeholder="e.g. 123456789012">
+                                        <div class="invalid-feedback">Please enter a valid 12-digit LRN number.</div>
                                     </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
-                            <div class="form-text">Your QR code will be sent to this email address.</div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control" id="email" name="email" required placeholder="your@email.com" autocomplete="email">
+                                        <div class="form-text">Your QR code will be sent to this email address.</div>
+                                        <div class="invalid-feedback">Please enter a valid email address.</div>
+                                    </div>
+                                </div>
+                                <div class="row g-3 mt-2">
+                                    <div class="col-md-6">
+                                        <label for="birth_date" class="form-label">Date of Birth</label>
+                                        <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+                                        <div class="invalid-feedback">Please select your birth date.</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="section" class="form-label">Section</label>
+                                        <input type="text" class="form-control" id="section" name="section" required placeholder="e.g. 7-A, 8-Einstein">
+                                        <div class="invalid-feedback">Please enter your section.</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="birth_date" class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" id="birth_date" name="birth_date" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="section" class="form-label">Section</label>
-                            <input type="text" class="form-control" id="section" name="section" required placeholder="Enter your section (e.g. 7-A, 8-Einstein)">
-                        </div>
-                        <hr>
-                        <h5>Parent/Guardian Information</h5>
-                        <div class="mb-3">
-                            <label for="parent_name" class="form-label">Parent/Guardian Name</label>
-                            <input type="text" class="form-control" id="parent_name" name="parent_name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="parent_email" class="form-label">Parent/Guardian Email</label>
-                            <input type="email" class="form-control" id="parent_email" name="parent_email">
-                        </div>
-                        <div class="mb-3">
-                            <label for="parent_mobile" class="form-label">Parent/Guardian Mobile Number</label>
-                            <input type="text" class="form-control" id="parent_mobile" name="parent_mobile" maxlength="11">
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Parent/Guardian Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="parent_name" class="form-label">Parent/Guardian Name</label>
+                                        <input type="text" class="form-control" id="parent_name" name="parent_name" placeholder="Maria Dela Cruz">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="parent_email" class="form-label">Parent/Guardian Email</label>
+                                        <input type="email" class="form-control" id="parent_email" name="parent_email" placeholder="parent@email.com">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="parent_mobile" class="form-label">Parent/Guardian Mobile Number</label>
+                                        <input type="text" class="form-control" id="parent_mobile" name="parent_mobile" maxlength="11" pattern="[0-9]{11}" title="Please enter a valid 11-digit mobile number" placeholder="09XXXXXXXXX">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Register</button>
+                            <button type="submit" class="btn btn-primary btn-lg px-5">Register</button>
                         </div>
                     </form>
                 </div>
@@ -112,4 +115,20 @@
         </div>
     </div>
 </div>
+<script>
+    // Bootstrap client-side validation
+    (() => {
+        'use strict';
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
 {% endblock %}

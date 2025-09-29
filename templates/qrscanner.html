@@ -7,97 +7,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .page-header {
-            background-color: #fff;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        #reader {
-            width: 100%;
-            max-width: 640px;
-            margin: 0 auto;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .reader-container {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        #message {
-            display: none;
-            margin-top: 10px;
-            border-radius: 8px;
-        }
-        .scan-region-highlight {
-            border: 3px solid #0d6efd !important;
-            border-radius: 12px;
-        }
-        .control-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        .btn-custom {
-            padding: 12px 24px;
-            font-weight: 500;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        .btn-custom:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .scan-info {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .scan-info h5 {
-            color: #0d6efd;
-            border-bottom: 2px solid #e9ecef;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        #cameraStatus {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            display: none;
-            text-align: center;
-            font-weight: 500;
-        }
-        .camera-switch {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-            background: rgba(255,255,255,0.9);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        body { background-color: #f8f9fa; }
+        #reader { width: 100%; max-width: 640px; margin: 0 auto; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .reader-container { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        #message { display: none; margin-top: 10px; border-radius: 8px; }
+        .scan-region-highlight { border: 3px solid #0d6efd !important; border-radius: 12px; }
+        .control-panel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .btn-custom { padding: 12px 24px; font-weight: 500; border-radius: 8px; transition: all 0.3s ease; }
+        .btn-custom:hover { transform: translateY(-1px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .scan-info { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .scan-info h5 { color: #0d6efd; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-bottom: 15px; }
+        #cameraStatus { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(0, 0, 0, 0.7); color: white; padding: 10px 20px; border-radius: 20px; display: none; text-align: center; font-weight: 500; }
+        .camera-switch { position: absolute; top: 10px; right: 10px; z-index: 1000; background: rgba(255,255,255,0.9); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
@@ -109,7 +30,6 @@
             </h2>
         </div>
     </div>
-
     <div class="container">
         <div class="control-panel mb-4">
             <div class="row align-items-center">
@@ -127,7 +47,6 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-12">
                 <div class="reader-container position-relative">
@@ -137,8 +56,13 @@
                     <div id="cameraStatus">Initializing camera...</div>
                     <div id="reader"></div>
                     <div id="message" class="alert mt-3"></div>
+                    <div class="mt-3 text-center">
+                        <label for="qrImageInput" class="form-label">Or upload QR code image:</label>
+                        <input type="file" id="qrImageInput" accept="image/*" class="form-control" style="max-width:300px; margin:0 auto;">
+                        <div id="imageScanResult" class="mt-2"></div>
+                        <div id="image-reader" style="display:none;"></div>
+                    </div>
                 </div>
-
                 <div class="scan-info mt-4">
                     <h5 class="d-flex align-items-center">
                         <i class="fas fa-history me-2"></i>
@@ -168,7 +92,6 @@
             </div>
         </div>
     </div>
-
     <script src="/static/js/html5-qrcode.min.js"></script>
     <script>
         // Configuration object
@@ -177,7 +100,6 @@
             currentFacingMode: 'environment',
             currentAction: 'time_in',
             isScanning: false,
-            audioContext: null,
             config: {
                 fps: 15,
                 qrbox: 250,
@@ -190,14 +112,12 @@
                 }
             }
         };
-
         // DOM Elements
         const timeInBtn = document.getElementById('timeInBtn');
         const timeOutBtn = document.getElementById('timeOutBtn');
         const switchCameraBtn = document.getElementById('switchCameraBtn');
         const messageDiv = document.getElementById('message');
         const cameraStatus = document.getElementById('cameraStatus');
-
         function showCameraStatus(message, autoHide = true) {
             if (cameraStatus) {
                 cameraStatus.textContent = message;
@@ -209,77 +129,19 @@
                 }
             }
         }
-
         function hideCameraStatus() {
             if (cameraStatus) {
                 cameraStatus.style.display = 'none';
             }
         }
-
-        async function initializeAudio() {
-            try {
-                if (!QRScannerConfig.audioContext) {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    QRScannerConfig.audioContext = new AudioContext();
-                }
-
-                // Function to create beep sound
-                const createBeep = async (frequency, duration, type = 'sine') => {
-                    const ctx = QRScannerConfig.audioContext;
-                    const oscillator = ctx.createOscillator();
-                    const gainNode = ctx.createGain();
-                    
-                    oscillator.connect(gainNode);
-                    gainNode.connect(ctx.destination);
-                    
-                    oscillator.type = type;
-                    oscillator.frequency.value = frequency;
-                    
-                    const now = ctx.currentTime;
-                    gainNode.gain.setValueAtTime(0, now);
-                    gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
-                    gainNode.gain.linearRampToValueAtTime(0, now + duration);
-                    
-                    oscillator.start(now);
-                    oscillator.stop(now + duration);
-                };
-
-                // Success sound
-                QRScannerConfig.playSuccessSound = async () => {
-                    await createBeep(1800, 0.15, 'sine');
-                    setTimeout(() => createBeep(2200, 0.1, 'sine'), 150);
-                };
-
-                // Error sound
-                QRScannerConfig.playErrorSound = async () => {
-                    await createBeep(400, 0.3, 'triangle');
-                };
-
-            } catch (error) {
-                console.error('Error initializing audio:', error);
-            }
-        }
-
         function showMessage(text, type) {
-            if (!messageDiv) {
-                console.error('Message div not found');
-                return;
-            }
+            if (!messageDiv) return;
             messageDiv.textContent = text;
             messageDiv.className = 'alert mt-3 alert-' + (type === 'success' ? 'success' : 'danger');
             messageDiv.style.display = 'block';
-            
-            if (window.messageTimeout) {
-                clearTimeout(window.messageTimeout);
-            }
-            
-            window.messageTimeout = setTimeout(() => {
-                if (messageDiv) {
-                    messageDiv.style.display = 'none';
-                }
-            }, 3000);
+            if (window.messageTimeout) clearTimeout(window.messageTimeout);
+            window.messageTimeout = setTimeout(() => { if (messageDiv) messageDiv.style.display = 'none'; }, 3000);
         }
-
         function updateLastScanInfo(data) {
             document.getElementById('name').textContent = data.name || '-';
             document.getElementById('lrn').textContent = data.lrn || '-';
@@ -288,143 +150,80 @@
             document.getElementById('time_out').textContent = data.time_out || '-';
             document.getElementById('time').textContent = data.timestamp || '-';
         }
-
         async function processAttendance(decodedText) {
-            console.log('Processing QR data:', decodedText);
-            
             try {
                 let qrData = JSON.parse(decodedText);
-                
-                if (!qrData || !qrData.lrn) {
-                    throw new Error('Invalid QR code format');
-                }
-
-                const data = {
-                    lrn: qrData.lrn,
-                    action: QRScannerConfig.currentAction
-                };
-
+                if (!qrData || !qrData.lrn) throw new Error('Invalid QR code format');
+                const data = { lrn: qrData.lrn, action: QRScannerConfig.currentAction };
                 const response = await fetch('/scan-qr/', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
                     body: JSON.stringify(data)
                 });
-
                 const result = await response.json();
-                
                 if (result.status === 'success') {
-                    await QRScannerConfig.playSuccessSound();
                     updateLastScanInfo(result.data);
                     showMessage(result.message, 'success');
                 } else {
                     throw new Error(result.message);
                 }
             } catch (error) {
-                console.error('Error processing attendance:', error);
-                await QRScannerConfig.playErrorSound();
                 showMessage(error.message || 'Error processing QR code', 'error');
             }
         }
-
         async function startScanner() {
             showCameraStatus('Starting camera...', false);
-            
-            try {
-                if (QRScannerConfig.scanner) {
-                    await QRScannerConfig.scanner.stop();
-                    await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay
-                }
-
-                QRScannerConfig.scanner = new Html5Qrcode("reader", { verbose: false });
-                
-                let cameraId = null;
-                
+            let retryCount = 0;
+            const maxRetries = 2;
+            async function tryStart() {
                 try {
-                    const devices = await Html5Qrcode.getCameras();
-                    console.log('Available cameras:', devices);
-                    
-                    // Try to find the preferred camera based on facing mode
-                    if (devices.length > 0) {
-                        // Most mobile devices list the back camera first
-                        cameraId = QRScannerConfig.currentFacingMode === 'environment' ? 
-                            devices[0].id : 
-                            (devices.length > 1 ? devices[1].id : devices[0].id);
+                    if (QRScannerConfig.scanner && QRScannerConfig.isScanning) {
+                        await QRScannerConfig.scanner.stop();
+                        QRScannerConfig.isScanning = false;
+                        await new Promise(resolve => setTimeout(resolve, 500));
                     }
-                } catch (error) {
-                    console.warn('Error getting camera list:', error);
-                    // Continue without camera list - will try facingMode instead
-                }
-
-                const startPromise = QRScannerConfig.scanner.start(
-                    cameraId ? { deviceId: cameraId } : { facingMode: QRScannerConfig.currentFacingMode },
-                    {
-                        ...QRScannerConfig.config,
-                        videoConstraints: {
-                            ...QRScannerConfig.config.videoConstraints,
-                            // Add fallback options for better compatibility
-                            width: { ideal: 1080 },
-                            height: { ideal: 720 }
-                        }
-                    },
-                    async (decodedText) => {
-                        try {
+                    QRScannerConfig.scanner = new Html5Qrcode("reader", { verbose: false });
+                    let cameraId = null;
+                    const devices = await Html5Qrcode.getCameras();
+                    if (devices.length > 0) {
+                        cameraId = QRScannerConfig.currentFacingMode === 'environment' ? devices[0].id : (devices.length > 1 ? devices[1].id : devices[0].id);
+                    }
+                    await QRScannerConfig.scanner.start(
+                        cameraId ? { deviceId: cameraId } : { facingMode: QRScannerConfig.currentFacingMode },
+                        QRScannerConfig.config,
+                        async (decodedText) => {
                             QRScannerConfig.scanner.pause(true);
                             await processAttendance(decodedText);
-                        } finally {
-                            setTimeout(() => {
-                                if (QRScannerConfig.scanner) {
-                                    QRScannerConfig.scanner.resume();
-                                }
-                            }, 1000);
+                            setTimeout(() => { if (QRScannerConfig.scanner) QRScannerConfig.scanner.resume(); }, 1000);
+                        },
+                        (errorMessage) => {
+                            if (errorMessage && errorMessage.includes('No MultiFormat Readers were able to detect the code')) {
+                                showMessage('No QR code detected. Please make sure the QR code is clearly visible, well-lit, and not damaged.', 'error');
+                            } else {
+                                console.error('QR Scanner Error:', errorMessage);
+                            }
                         }
-                    },
-                    (errorMessage) => {
-                        if (!errorMessage.includes('No MultiFormat Readers')) {
-                            console.error('QR Scanner Error:', errorMessage);
+                    );
+                    QRScannerConfig.isScanning = true;
+                    hideCameraStatus();
+                } catch (error) {
+                    if (error.message && error.message.includes('Timeout starting video source') && retryCount < maxRetries) {
+                        retryCount++;
+                        showMessage('Camera timeout. Retrying (' + retryCount + '/' + maxRetries + ')...', 'error');
+                        setTimeout(tryStart, 1200);
+                    } else {
+                        let errorMsg = error && error.message ? error.message : '';
+                        if (!errorMsg || errorMsg === 'undefined') {
+                            errorMsg = 'No specific error message. This may be due to browser permissions, missing camera, or device incompatibility.';
                         }
+                        showMessage('Failed to start scanner. ' + errorMsg + '\n\nTroubleshooting:\n- Make sure your camera is connected and not used by another app.\n- Allow camera access in your browser (check site settings).\n- Try refreshing the page or restarting your browser/device.\n- If on desktop, try a different browser or check privacy settings.', 'error');
+                        console.error('Scanner start error:', error);
+                        hideCameraStatus();
                     }
-                );
-
-                showMessage('Scanner ready. Please show your QR code.', 'success');
-                QRScannerConfig.isScanning = true;
-                hideCameraStatus();
-
-            } catch (error) {
-                console.error('Error starting scanner:', error);
-                
-                let errorMessage = 'Failed to start scanner. ';
-                
-                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-                    errorMessage += 'Please allow camera access and refresh the page.';
-                } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
-                    errorMessage += 'No camera found. Please check your device.';
-                } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
-                    errorMessage += 'Camera is in use by another application.';
-                } else if (error.name === 'AbortError') {
-                    errorMessage += 'Camera initialization timed out. Please try again.';
-                    // Try to restart the scanner with different settings
-                    setTimeout(async () => {
-                        try {
-                            QRScannerConfig.config.videoConstraints = {
-                                facingMode: QRScannerConfig.currentFacingMode,
-                                width: { ideal: 640 },
-                                height: { ideal: 480 }
-                            };
-                            await startScanner();
-                        } catch (retryError) {
-                            console.error('Retry failed:', retryError);
-                        }
-                    }, 1000);
                 }
-                
-                showMessage(errorMessage, 'error');
-                hideCameraStatus();
             }
+            tryStart();
         }
-
         async function stopScanner() {
             if (QRScannerConfig.scanner) {
                 try {
@@ -436,7 +235,52 @@
                 }
             }
         }
-
+        document.addEventListener('DOMContentLoaded', function() {
+            startScanner();
+            if (timeInBtn) {
+                timeInBtn.addEventListener('click', function() {
+                    QRScannerConfig.currentAction = 'time_in';
+                    timeInBtn.classList.add('btn-primary');
+                    timeInBtn.classList.remove('btn-secondary');
+                    timeOutBtn.classList.add('btn-secondary');
+                    timeOutBtn.classList.remove('btn-primary');
+                });
+            }
+            if (timeOutBtn) {
+                timeOutBtn.addEventListener('click', function() {
+                    QRScannerConfig.currentAction = 'time_out';
+                    timeOutBtn.classList.add('btn-primary');
+                    timeOutBtn.classList.remove('btn-secondary');
+                    timeInBtn.classList.add('btn-secondary');
+                    timeInBtn.classList.remove('btn-primary');
+                });
+            }
+            if (switchCameraBtn) {
+                switchCameraBtn.addEventListener('click', async function() {
+                    await stopScanner();
+                    QRScannerConfig.currentFacingMode = QRScannerConfig.currentFacingMode === 'environment' ? 'user' : 'environment';
+                    await startScanner();
+                });
+            }
+            // QR code image upload
+            const qrImageInput = document.getElementById('qrImageInput');
+            const imageScanResult = document.getElementById('imageScanResult');
+            if (qrImageInput) {
+                qrImageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const html5Qr = new Html5Qrcode('image-reader');
+                    html5Qr.scanFile(file, true)
+                        .then(async decodedText => {
+                            imageScanResult.textContent = '';
+                            await processAttendance(decodedText);
+                        })
+                        .catch(err => {
+                            imageScanResult.textContent = 'No QR code found in image.';
+                        });
+                });
+            }
+        });
         // CSRF Token helper
         function getCookie(name) {
             let cookieValue = null;
@@ -452,64 +296,8 @@
             }
             return cookieValue;
         }
-
-        // Initialize everything when the page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize audio and scanner
-            initializeAudio();
-            startScanner();
-
-            // Time In button event listener
-            if (timeInBtn) {
-                timeInBtn.addEventListener('click', function() {
-                    initializeAudio();
-                    QRScannerConfig.currentAction = 'time_in';
-                    timeInBtn.classList.add('btn-primary');
-                    timeInBtn.classList.remove('btn-secondary');
-                    timeOutBtn.classList.add('btn-secondary');
-                    timeOutBtn.classList.remove('btn-primary');
-                });
-            }
-
-            // Time Out button event listener
-            if (timeOutBtn) {
-                timeOutBtn.addEventListener('click', function() {
-                    initializeAudio();
-                    QRScannerConfig.currentAction = 'time_out';
-                    timeOutBtn.classList.add('btn-primary');
-                    timeOutBtn.classList.remove('btn-secondary');
-                    timeInBtn.classList.add('btn-secondary');
-                    timeInBtn.classList.remove('btn-primary');
-                });
-            }
-
-            // Camera switch button event listener
-            if (switchCameraBtn) {
-                switchCameraBtn.addEventListener('click', async function() {
-                    try {
-                        await stopScanner();
-                        QRScannerConfig.currentFacingMode = 
-                            QRScannerConfig.currentFacingMode === 'environment' ? 'user' : 'environment';
-                        await startScanner();
-                    } catch (error) {
-                        console.error('Error switching camera:', error);
-                        showMessage('Error switching camera. Please try again.', 'error');
-                    }
-                });
-            }
-
-            // Cleanup on page unload
-            window.addEventListener('beforeunload', async function() {
-                if (QRScannerConfig.scanner) {
-                    try {
-                        await stopScanner();
-                    } catch (error) {
-                        console.error('Error stopping scanner:', error);
-                    }
-                }
-            });
-        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+<!-- Removed duplicate minimal scanner UI. Only the advanced project-style scanner remains. -->
