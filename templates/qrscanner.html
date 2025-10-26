@@ -102,6 +102,39 @@
             cursor: pointer;
             box-shadow: 0 2px 8px rgba(33,147,176,0.12);
         }
+        .control-buttons {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            display: flex;
+            gap: 8px;
+        }
+        .control-buttons .ctrl {
+            background: rgba(255,255,255,0.95);
+            border-radius: 8px;
+            padding: 8px 10px;
+            box-shadow: 0 2px 8px rgba(33,147,176,0.12);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight:600;
+        }
+        .scan-result-card {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1100;
+            width: calc(100% - 40px);
+            max-width: 520px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: 16px;
+            display: none;
+        }
         @media (max-width: 768px) {
             .page-header h2 {
                 font-size: 1.5rem;
@@ -146,8 +179,24 @@
     <div class="row">
             <div class="col-12">
                 <div class="reader-container position-relative" aria-label="QR Scanner">
+                    <div class="control-buttons">
+                        <div class="ctrl" id="torchBtn" title="Toggle Torch" aria-label="Toggle Torch" role="button" tabindex="0"><i class="fas fa-bolt"></i><span class="d-none d-sm-inline">Torch</span></div>
+                        <div class="ctrl" id="pauseBtn" title="Pause Scanner" aria-label="Pause Scanner" role="button" tabindex="0"><i class="fas fa-pause"></i><span class="d-none d-sm-inline">Pause</span></div>
+                        <div class="ctrl" id="retryBtn" title="Restart Scanner" aria-label="Restart Scanner" role="button" tabindex="0"><i class="fas fa-redo"></i><span class="d-none d-sm-inline">Retry</span></div>
+                    </div>
                     <div class="camera-switch" id="switchCameraBtn" title="Switch Camera" aria-label="Switch Camera">
                         <i class="fas fa-camera-rotate"></i>
+                    </div>
+
+                    <div class="scan-result-card" id="scanResultCard" role="region" aria-live="polite">
+                        <div>
+                            <h5 class="mb-2">Scanned QR</h5>
+                            <pre id="scannedText" style="white-space:pre-wrap; word-break:break-word; background:#f8f9fa; padding:8px; border-radius:6px;">-</pre>
+                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                <button id="confirmScanBtn" class="btn btn-success btn-sm">Confirm</button>
+                                <button id="cancelScanBtn" class="btn btn-outline-secondary btn-sm">Cancel</button>
+                            </div>
+                        </div>
                     </div>
                     <div id="cameraStatus" aria-live="polite">Initializing camera...</div>
                     <div id="reader" aria-label="Camera QR Reader"></div>
@@ -314,13 +363,15 @@
                         cameraId ? { deviceId: cameraId } : { facingMode: QRScannerConfig.currentFacingMode },
                         QRScannerConfig.config,
                         async (decodedText) => {
-                            QRScannerConfig.scanner.pause(true);
-                            await processAttendance(decodedText);
-                            setTimeout(() => { if (QRScannerConfig.scanner) QRScannerConfig.scanner.resume(); }, 1000);
+                            // pause scanning and show result so user can confirm
+                            try {
+                                if (QRScannerConfig.scanner && QRScannerConfig.scanner.pause) QRScannerConfig.scanner.pause(true);
+                            } catch(e) { console.warn('Pause failed:', e); }
+                            showScanResult(decodedText);
                         },
                         (errorMessage) => {
                             if (errorMessage && errorMessage.includes('No MultiFormat Readers were able to detect the code')) {
-                                showMessage('No QR code detected. Please make sure the QR code is clearly visible, well-lit, and not damaged.', 'error');
+                                // quiet: no code detected in this frame
                             } else {
                                 console.error('QR Scanner Error:', errorMessage);
                             }
@@ -359,6 +410,9 @@
         }
         document.addEventListener('DOMContentLoaded', function() {
             startScanner();
+            // local state for decoded value and torch
+            let lastDecodedText = null;
+            let torchOn = false;
             if (timeInBtn) {
                 timeInBtn.addEventListener('click', function() {
                     QRScannerConfig.currentAction = 'time_in';
@@ -384,6 +438,83 @@
                     await startScanner();
                 });
             }
+            // show result overlay and wire confirm/cancel
+            const scanResultCard = document.getElementById('scanResultCard');
+            const scannedText = document.getElementById('scannedText');
+            const confirmScanBtn = document.getElementById('confirmScanBtn');
+            const cancelScanBtn = document.getElementById('cancelScanBtn');
+            const pauseBtnEl = document.getElementById('pauseBtn');
+            const retryBtnEl = document.getElementById('retryBtn');
+            const torchBtnEl = document.getElementById('torchBtn');
+
+            function showScanResult(text) {
+                lastDecodedText = text;
+                scannedText.textContent = text;
+                if (scanResultCard) scanResultCard.style.display = 'block';
+            }
+            function hideScanResult() {
+                if (scanResultCard) scanResultCard.style.display = 'none';
+                lastDecodedText = null;
+            }
+
+            if (confirmScanBtn) {
+                confirmScanBtn.addEventListener('click', async function() {
+                    if (!lastDecodedText) return;
+                    // process and then close
+                    await processAttendance(lastDecodedText);
+                    hideScanResult();
+                    try { if (QRScannerConfig.scanner && QRScannerConfig.scanner.resume) QRScannerConfig.scanner.resume(); } catch(e){}
+                });
+            }
+            if (cancelScanBtn) {
+                cancelScanBtn.addEventListener('click', function() {
+                    hideScanResult();
+                    try { if (QRScannerConfig.scanner && QRScannerConfig.scanner.resume) QRScannerConfig.scanner.resume(); } catch(e){}
+                });
+            }
+
+            // pause/resume
+            if (pauseBtnEl) {
+                pauseBtnEl.addEventListener('click', function() {
+                    if (!QRScannerConfig.scanner) return;
+                    if (QRScannerConfig.isScanning) {
+                        try { QRScannerConfig.scanner.pause(true); QRScannerConfig.isScanning = false; pauseBtnEl.querySelector('i').className = 'fas fa-play'; pauseBtnEl.title='Resume Scanner'; }
+                        catch(e){console.warn(e)}
+                    } else {
+                        try { QRScannerConfig.scanner.resume(); QRScannerConfig.isScanning = true; pauseBtnEl.querySelector('i').className = 'fas fa-pause'; pauseBtnEl.title='Pause Scanner'; }
+                        catch(e){console.warn(e)}
+                    }
+                });
+            }
+
+            // retry button: restart scanner
+            if (retryBtnEl) {
+                retryBtnEl.addEventListener('click', async function() {
+                    await stopScanner();
+                    await startScanner();
+                });
+            }
+
+            // toggle torch (best-effort)
+            async function toggleTorch() {
+                try {
+                    const video = document.querySelector('#reader video');
+                    if (!video) throw new Error('No video element');
+                    const track = video.srcObject && video.srcObject.getVideoTracks && video.srcObject.getVideoTracks()[0];
+                    if (!track) throw new Error('No video track available');
+                    const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+                    if (!capabilities.torch) throw new Error('Torch not supported');
+                    torchOn = !torchOn;
+                    await track.applyConstraints({ advanced: [{ torch: torchOn }] });
+                    if (torchBtnEl) torchBtnEl.classList.toggle('active', torchOn);
+                } catch (err) {
+                    console.warn('Torch toggle failed:', err);
+                    showMessage('Torch not available on this device/browser.', 'error');
+                }
+            }
+            if (torchBtnEl) {
+                torchBtnEl.addEventListener('click', toggleTorch);
+            }
             // QR code image upload
             const qrImageInput = document.getElementById('qrImageInput');
             const imageScanResult = document.getElementById('imageScanResult');
@@ -395,7 +526,8 @@
                     html5Qr.scanFile(file, true)
                         .then(async decodedText => {
                             imageScanResult.textContent = '';
-                            await processAttendance(decodedText);
+                            // show the same confirmation flow
+                            showScanResult(decodedText);
                         })
                         .catch(err => {
                             imageScanResult.textContent = 'No QR code found in image.';

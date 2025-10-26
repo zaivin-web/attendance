@@ -50,6 +50,10 @@ class Student(models.Model):
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True)
     
     def save(self, *args, **kwargs):
+        is_new = self._state.adding  # Check if this is a new student
+        had_qr = bool(self.qr_code)  # Check if QR existed before
+
+        # Generate student_id if not exists
         if not self.student_id:
             # Get the last ID from the database
             last_student = Student.objects.all().order_by('-student_id').first()
@@ -65,7 +69,96 @@ class Student(models.Model):
             
             # Create new ID with leading zeros (e.g., STD0001)
             self.student_id = f'STD{new_id:04d}'
+        
+        # Generate QR code if not exists
+        if not self.qr_code:
+            import qrcode
+            import json
+            from django.core.files.base import ContentFile
+            from io import BytesIO
+            
+            # Create QR code data
+            qr_data = {
+                'student_id': self.student_id,
+                'lrn': self.lrn,
+                'name': f"{self.first_name} {self.last_name}",
+                'section': self.section
+            }
+            
+            # Generate QR code
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(json.dumps(qr_data))
+            qr.make(fit=True)
+            
+            # Create image from QR code
+            img = qr.make_image(fill_color="black", back_color="white")
+            
+            # Save QR code image
+            buffer = BytesIO()
+            img.save(buffer, format='PNG')
+            filename = f'qr_code_{self.student_id}.png'
+            
+            # Save to model's ImageField
+            self.qr_code.save(filename, ContentFile(buffer.getvalue()), save=False)
+        
+        # Save the model first
         super().save(*args, **kwargs)
+        
+        # Send email if this is a new student or QR was just generated
+        if (is_new or (self.qr_code and not had_qr)) and (self.email or self.parent_email):
+            try:
+                from django.core.mail import EmailMultiAlternatives
+                from django.template.loader import render_to_string
+                from django.utils import timezone
+                from django.conf import settings
+                from email.mime.image import MIMEImage
+                import os
+                
+                # Prepare email context
+                context = {
+                    'student': self,
+                    'school_name': 'Southville 8b National High School',
+                    'current_year': timezone.now().year
+                }
+                
+                # Create email
+                subject = f'Your QR Code - School Attendance System'
+                text_content = f'Your QR code for the School Attendance System is attached. Student ID: {self.student_id}'
+                html_content = render_to_string('emails/qr_code_email.html', context)
+                
+                # Create email with both text and HTML versions
+                email = EmailMultiAlternatives(
+                    subject=subject,
+                    body=text_content,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    to=[self.email] if self.email else [],
+                    cc=[self.parent_email] if self.parent_email else []
+                )
+                
+                # Attach HTML version
+                email.attach_alternative(html_content, "text/html")
+                
+                # Attach QR code image if it exists and file exists
+                if self.qr_code and os.path.exists(self.qr_code.path):
+                    with open(self.qr_code.path, 'rb') as f:
+                        img = MIMEImage(f.read())
+                        img.add_header('Content-ID', '<qr_code>')
+                        img.add_header('Content-Disposition', 'inline', filename=os.path.basename(self.qr_code.name))
+                        email.attach(img)
+                
+                # Send email
+                email.send(fail_silently=False)
+                
+            except Exception as e:
+                # Log the error but don't prevent saving
+                import logging
+                logger = logging.getLogger(__name__)
+                logger.error(f"Failed to send QR code email to {self.get_full_name()}: {str(e)}")
     
     # Student Contact Information
     email = models.EmailField(verbose_name="Student Email", blank=True)
